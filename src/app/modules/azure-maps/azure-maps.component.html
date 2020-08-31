@@ -1,8 +1,10 @@
-<h2>Hero List</h2>
+<div class="tab-pane container-fluid w-100 h-100">
 
-<p><i>Pick a hero from the list</i></p>
-<ul>
-  <li *ngFor="let hero of heroes" (click)="selectHero(hero)">
-    {{hero.name}}
-  </li>
-</ul>
+  <div class="row h-5">
+    <h3>AZURE MAPS</h3>
+  </div>
+
+  <div class="row w-100 h-100">
+    <div class="map-container" #mapContainer></div>
+  </div>
+</div>
