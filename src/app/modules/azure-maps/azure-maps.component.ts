@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { AzureMapsService } from './auzer-maps.service';
 import * as atlas from 'azure-maps-control';
 
 @Component({
@@ -12,41 +13,23 @@ export class AzureMapsComponent implements OnInit {
   @ViewChild('mapContainer', { static: true })
   public mapContainer: ElementRef;
 
+  constructor(private azureMapsService: AzureMapsService) { }
+
   public ngOnInit(): void {
     this.initMap();
   }
 
   private initMap(): void {
+
     if (this.map == null) {
-      this.map = new atlas.Map(this.mapContainer.nativeElement, {
-        center: [-118.270293, 34.039737],
-        zoom: 14,
-        anguage: 'en-US',
-        authOptions: {
-          authType: atlas.AuthenticationType.subscriptionKey,
-          subscriptionKey: 'Fnx2qxgvFYMnsLyDzW5THnONPC25rxmiah5amTzkpgc'
-        }
-      });
-
-      this.map.events.add('ready', () => {
-        console.log('AZURE Maps is loaded.');
-
-        const popupMarker = new atlas.HtmlMarker({
-          color: 'DodgerBlue',
-          text: '10',
-          position: [-118.270293, 34.039737],
-          popup: new atlas.Popup({
-            content: '<div style="padding:10px">Hello World</div>',
-            pixelOffset: [0, -30]
-          })
-        });
-
-        this.map.markers.add(popupMarker);
-
-        this.map.events.add('click', popupMarker, () => {
-          popupMarker.togglePopup();
-        });
-      });
+      this.map = this.azureMapsService.createMap(this.mapContainer.nativeElement,
+        [
+          { name: 'Facility 1', latitude: -118.270293, longitude: 34.009737 },
+          { name: 'Facility 2', latitude: -118.250293, longitude: 34.049737 },
+          { name: 'Facility 3', latitude: -118.260293, longitude: 34.029737 },
+          { name: 'Facility 4', latitude: -118.240293, longitude: 34.019737 }
+        ]);
     }
+
   }
 }
