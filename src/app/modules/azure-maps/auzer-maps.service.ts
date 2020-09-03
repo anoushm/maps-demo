@@ -11,7 +11,7 @@ export class AzureMapsService {
   public createMap(htmlElement: HTMLElement, markes: any[]): atlas.Map {
     const map = new atlas.Map(htmlElement, {
       center: [-118.270293, 34.039737],
-      zoom: 12,
+      zoom: 4,
       anguage: 'en-US',
       authOptions: {
         authType: atlas.AuthenticationType.subscriptionKey,
@@ -25,10 +25,17 @@ export class AzureMapsService {
       this.addMarkes(map, markes);
       this.addNormalPopupmarker(map);
       map.controls.add(this.mapControls, { position: atlas.ControlPosition.TopRight });
-      map.layers.add(this.weatherTileLayer);
     });
 
     return map;
+  }
+
+  public addWeatherLayer(map: atlas.Map): void {
+    map.layers.add(this.weatherTileLayer);
+  }
+
+  public removeWeatherLayer(map: atlas.Map): void {
+    map.layers.remove('weather-layer');
   }
 
   private get weatherTileLayer(): atlas.layer.TileLayer {
@@ -37,7 +44,8 @@ export class AzureMapsService {
       tileUrl:  this.weatherTileUrl,
       opacity: 0.9,
       tileSize: 256
-    });
+    },
+    'weather-layer');
 
     return tileLayer;
   }

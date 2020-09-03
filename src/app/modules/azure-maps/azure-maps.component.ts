@@ -10,6 +10,9 @@ import * as atlas from 'azure-maps-control';
 export class AzureMapsComponent implements OnInit {
   private map: atlas.Map = null;
 
+  public isWeatherOn = false;
+  public isEarthquake = false;
+
   @ViewChild('mapContainer', { static: true })
   public mapContainer: ElementRef;
 
@@ -31,5 +34,21 @@ export class AzureMapsComponent implements OnInit {
         ]);
     }
 
+  }
+
+  public onWeather(): void {
+    this.isWeatherOn = !this.isWeatherOn;
+
+    if (this.isWeatherOn) {
+      this.azureMapsService.addWeatherLayer(this.map);
+    } else {
+      this.azureMapsService.removeWeatherLayer(this.map);
+    }
+  }
+
+  public onEarthquake(): void {
+    this.isEarthquake = !this.isEarthquake;
+
+    console.log('earthquake is called!');
   }
 }
