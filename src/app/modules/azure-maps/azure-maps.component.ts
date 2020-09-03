@@ -11,7 +11,7 @@ export class AzureMapsComponent implements OnInit {
   private map: atlas.Map = null;
 
   public isWeatherOn = false;
-  public isEarthquake = false;
+  public isEarthquakeOn = false;
 
   @ViewChild('mapContainer', { static: true })
   public mapContainer: ElementRef;
@@ -47,8 +47,12 @@ export class AzureMapsComponent implements OnInit {
   }
 
   public onEarthquake(): void {
-    this.isEarthquake = !this.isEarthquake;
+    this.isEarthquakeOn = !this.isEarthquakeOn;
 
-    console.log('earthquake is called!');
+    if (this.isEarthquakeOn) {
+      this.azureMapsService.addEarthquakeLayer(this.map);
+    } else {
+      this.azureMapsService.removeEarthquakeLayer(this.map);
+    }
   }
 }

@@ -7,6 +7,7 @@ import * as atlas from 'azure-maps-control';
 export class AzureMapsService {
   private subscriptionKey = 'Fnx2qxgvFYMnsLyDzW5THnONPC25rxmiah5amTzkpgc';
   private weatherTileUrl = 'https://atlas.microsoft.com/map/tile?api-version=2.0&tilesetId=microsoft.weather.infrared.main&zoom={z}&x={x}&y={y}&subscription-key=' + this.subscriptionKey;
+  private earthquakeFeedUrl = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson';
 
   public createMap(htmlElement: HTMLElement, markes: any[]): atlas.Map {
     const map = new atlas.Map(htmlElement, {
@@ -38,14 +39,79 @@ export class AzureMapsService {
     map.layers.remove('weather-layer');
   }
 
+  public addEarthquakeLayer(map: atlas.Map): void {
+    //Create a data source and add it to the map.
+    const datasource = new atlas.source.DataSource();
+    map.sources.add(datasource);
+
+    //Load the earthquake data.
+    datasource.importDataFromUrl(this.earthquakeFeedUrl);
+
+    map.layers.add([
+      //Create a layer that defines how to render the shapes in the data source and add it to the map.
+      new atlas.layer.BubbleLayer(datasource, 'earthquake-circles', {
+        //Bubbles are made semi-transparent.
+        opacity: 0.75,
+
+        //Color of each bubble based on the value of "mag" property using a color gradient of green, yellow, orange, and red.
+        color: [
+          'interpolate',
+          ['linear'],
+          ['get', 'mag'],
+          0, 'green',
+          5, 'yellow',
+          6, 'orange',
+          7, 'red'
+        ],
+
+        /*
+         * Radius for each data point scaled based on the value of "mag" property.
+         * When "mag" = 0, radius will be 2 pixels.
+         * When "mag" = 8, radius will be 40 pixels.
+         * All other "mag" values will be a linear interpolation between these values.
+         */
+        radius: [
+          'interpolate',
+          ['linear'],
+          ['get', 'mag'],
+          0, 2,
+          8, 40
+        ]
+      }),
+
+      //Create a symbol layer using the same data source to render the magnitude as text above each bubble and add it to the map.
+      new atlas.layer.SymbolLayer(datasource, 'earthquake-labels', {
+        iconOptions: {
+          //Hide the icon image.
+          image: 'none'
+        },
+        textOptions: {
+          //An expression is used to concerte the "mag" property value into a string and appends the letter "m" to the end of it.
+          textField: ['concat', ['to-string', ['get', 'mag']], 'm'],
+          textSize: 12
+        }
+      })
+    ]);
+  }
+
+  public removeEarthquakeLayer(map: atlas.Map): void {
+    if (map.layers.getLayerById('earthquake-labels') != null) {
+      map.layers.remove('earthquake-labels');
+    }
+
+    if (map.layers.getLayerById('earthquake-circles') != null) {
+      map.layers.remove('earthquake-circles');
+    }
+  }
+
   private get weatherTileLayer(): atlas.layer.TileLayer {
 
     const tileLayer = new atlas.layer.TileLayer({
-      tileUrl:  this.weatherTileUrl,
+      tileUrl: this.weatherTileUrl,
       opacity: 0.9,
       tileSize: 256
     },
-    'weather-layer');
+      'weather-layer');
 
     return tileLayer;
   }
