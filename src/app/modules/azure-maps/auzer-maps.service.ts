@@ -7,7 +7,8 @@ import * as atlas from 'azure-maps-control';
 export class AzureMapsService {
   private subscriptionKey = 'Fnx2qxgvFYMnsLyDzW5THnONPC25rxmiah5amTzkpgc';
   private weatherTileUrl = 'https://atlas.microsoft.com/map/tile?api-version=2.0&tilesetId=microsoft.weather.infrared.main&zoom={z}&x={x}&y={y}&subscription-key=' + this.subscriptionKey;
-  private earthquakeFeedUrl = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson';
+  private earthquakeFeedUrl = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson'; // past 30 days
+  private wildfireUrl = 'https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/Active_Fires/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson';
 
   public createMap(htmlElement: HTMLElement, markes: any[]): atlas.Map {
     const map = new atlas.Map(htmlElement, {
@@ -94,13 +95,47 @@ export class AzureMapsService {
     ]);
   }
 
+  public addWildfireLayer(map: atlas.Map): void {
+    const datasource = new atlas.source.DataSource();
+    map.sources.add(datasource);
+
+    datasource.importDataFromUrl(this.wildfireUrl);
+
+    map.layers.add([
+
+      new atlas.layer.BubbleLayer(datasource, 'wildfire-bubble', {
+        opacity: 0.75,
+      }),
+
+      new atlas.layer.SymbolLayer(datasource, 'wildfire-labels', {
+        iconOptions: {
+          image: 'none'
+        },
+        textOptions: {
+          textField: ['concat', ['to-string', ['get', 'IncidentName']], 'm'],
+          textSize: 12
+        }
+      })
+    ]);
+  }
+
+  public removeWildfireLayer(map: atlas.Map): void {
+    if (map.layers.getLayerById('wildfire-labels') != null) {
+      map.layers.remove('wildfire-labels');
+    }
+
+    if (map.layers.getLayerById('earthquake-bubble') != null) {
+      map.layers.remove('earthquake-circles');
+    }
+  }
+
   public removeEarthquakeLayer(map: atlas.Map): void {
     if (map.layers.getLayerById('earthquake-labels') != null) {
       map.layers.remove('earthquake-labels');
     }
 
-    if (map.layers.getLayerById('earthquake-circles') != null) {
-      map.layers.remove('earthquake-circles');
+    if (map.layers.getLayerById('wildfire-bubble') != null) {
+      map.layers.remove('ewildfire-bubble');
     }
   }
 
@@ -110,8 +145,7 @@ export class AzureMapsService {
       tileUrl: this.weatherTileUrl,
       opacity: 0.9,
       tileSize: 256
-    },
-      'weather-layer');
+    }, 'weather-layer');
 
     return tileLayer;
   }

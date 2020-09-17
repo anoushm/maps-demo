@@ -12,6 +12,7 @@ export class AzureMapsComponent implements OnInit {
 
   public isWeatherOn = false;
   public isEarthquakeOn = false;
+  public isWildfireOn = false;
 
   @ViewChild('mapContainer', { static: true })
   public mapContainer: ElementRef;
@@ -34,6 +35,16 @@ export class AzureMapsComponent implements OnInit {
         ]);
     }
 
+  }
+
+  public onWildfire(): void {
+    this.isWildfireOn = !this.isWildfireOn;
+
+    if (this.isWildfireOn) {
+      this.azureMapsService.addWildfireLayer(this.map);
+    } else {
+      this.azureMapsService.removeWildfireLayer(this.map);
+    }
   }
 
   public onWeather(): void {
