@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as atlas from 'azure-maps-control';
 import { WildfireLayerService } from './wildfire-layer.service';
+import { EarthquakeLayerService } from './earthquake-layer.service';
 
 @Injectable({
   providedIn: 'root',
@@ -8,9 +9,8 @@ import { WildfireLayerService } from './wildfire-layer.service';
 export class AzureMapsService {
   private subscriptionKey = 'Fnx2qxgvFYMnsLyDzW5THnONPC25rxmiah5amTzkpgc';
   private weatherTileUrl = 'https://atlas.microsoft.com/map/tile?api-version=2.0&tilesetId=microsoft.weather.infrared.main&zoom={z}&x={x}&y={y}&subscription-key=' + this.subscriptionKey;
-  private earthquakeFeedUrl = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson'; // past 30 days
 
-  constructor(private wildfireLayerServuce: WildfireLayerService) { }
+  constructor(private wildfireLayerServuce: WildfireLayerService, private earthquakeLayerService: EarthquakeLayerService) { }
 
   public createMap(htmlElement: HTMLElement, markes: any[]): atlas.Map {
     const map = new atlas.Map(htmlElement, {
@@ -45,66 +45,7 @@ export class AzureMapsService {
   }
 
   public addEarthquakeLayer(map: atlas.Map): void {
-    //Create a data source and add it to the map.
-    let earthquakeDatasource = map.sources.getById('earthquake-datasource') as atlas.source.DataSource;
-
-    if (earthquakeDatasource == null) {
-      earthquakeDatasource = new atlas.source.DataSource('earthquake-datasource');
-      map.sources.add(earthquakeDatasource);
-
-      //Load the earthquake data.
-      earthquakeDatasource.importDataFromUrl(this.earthquakeFeedUrl);
-    }
-
-    map.layers.add(this.getEarthquakeLayers(map, earthquakeDatasource));
-  }
-
-  private getEarthquakeLayers(map: atlas.Map, datasource: atlas.source.Source): atlas.layer.Layer[] {
-    //Create a layer that defines how to render the shapes in the data source and add it to the map.
-    const earthquakeLayer = new atlas.layer.BubbleLayer(datasource, 'earthquake-circles', {
-      //Bubbles are made semi-transparent.
-      opacity: 0.75,
-
-      //Color of each bubble based on the value of "mag" property using a color gradient of green, yellow, orange, and red.
-      color: [
-        'interpolate',
-        ['linear'],
-        ['get', 'mag'],
-        0, 'green',
-        5, 'yellow',
-        6, 'orange',
-        7, 'red'
-      ],
-
-      /*
-       * Radius for each data point scaled based on the value of "mag" property.
-       * When "mag" = 0, radius will be 2 pixels.
-       * When "mag" = 8, radius will be 40 pixels.
-       * All other "mag" values will be a linear interpolation between these values.
-       */
-      radius: [
-        'interpolate',
-        ['linear'],
-        ['get', 'mag'],
-        0, 2,
-        8, 40
-      ]
-    });
-
-    //Create a symbol layer using the same data source to render the magnitude as text above each bubble and add it to the map.
-    const earthqukeLableLayer = new atlas.layer.SymbolLayer(datasource, 'earthquake-labels', {
-      iconOptions: {
-        //Hide the icon image.
-        image: 'none'
-      },
-      textOptions: {
-        //An expression is used to concerte the "mag" property value into a string and appends the letter "m" to the end of it.
-        textField: ['concat', ['to-string', ['get', 'mag']], 'm'],
-        textSize: 12
-      }
-    });
-
-    return [earthquakeLayer, earthqukeLableLayer];
+    this.earthquakeLayerService.addEarthquakeLayer(map);
   }
 
   public addWildfireLayer(map: atlas.Map): void {
@@ -116,13 +57,7 @@ export class AzureMapsService {
   }
 
   public removeEarthquakeLayer(map: atlas.Map): void {
-    if (map.layers.getLayerById('earthquake-circles') != null) {
-      map.layers.remove('earthquake-circles');
-    }
-
-    if (map.layers.getLayerById('earthquake-labels') != null) {
-      map.layers.remove('earthquake-labels');
-    }
+    this.earthquakeLayerService.removeEarthquakeLayer(map);
   }
 
   private get weatherTileLayer(): atlas.layer.TileLayer {
