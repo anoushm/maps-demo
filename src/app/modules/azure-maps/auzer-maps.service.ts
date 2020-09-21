@@ -45,20 +45,20 @@ export class AzureMapsService {
     }
   }
 
-  public addEarthquakeLayer(map: atlas.Map): void {
-    this.earthquakeLayerService.addEarthquakeLayer(map);
+  public async addEarthquakeLayer(map: atlas.Map): Promise<void> {
+    return this.earthquakeLayerService.addEarthquakeLayer(map);
   }
 
-  public addWildfireLayer(map: atlas.Map): void {
+  public async removeEarthquakeLayer(map: atlas.Map): Promise<void> {
+    return this.earthquakeLayerService.removeEarthquakeLayer(map);
+  }
+
+  public async addWildfireLayer(map: atlas.Map): Promise<void> {
     this.wildfireLayerServuce.addWildfireLayer(map);
   }
 
-  public removeWildfireLayer(map: atlas.Map): void {
+  public async removeWildfireLayer(map: atlas.Map): Promise<void> {
     this.wildfireLayerServuce.removeWildfireLayer(map);
-  }
-
-  public removeEarthquakeLayer(map: atlas.Map): void {
-    this.earthquakeLayerService.removeEarthquakeLayer(map);
   }
 
   private get weatherTileLayer(): atlas.layer.TileLayer {

@@ -11,7 +11,7 @@ export class WildfireLayerService {
   private wildfireBubbleClusterId = 'wildfire-bubble-cluster';
   private wildfireDubbleId = 'wildfire-bubble';
 
-  public addWildfireLayer(map: atlas.Map): void {
+  public async addWildfireLayer(map: atlas.Map): Promise<void> {
 
     let wildfireDatasource = map.sources.getById(this.wildfireDatasourceId) as atlas.source.DataSource;
 
@@ -30,7 +30,7 @@ export class WildfireLayerService {
 
       map.sources.add(wildfireDatasource);
 
-      wildfireDatasource.importDataFromUrl(this.wildfireUrl);
+      await wildfireDatasource.importDataFromUrl(this.wildfireUrl);
     }
 
     //Create a bubble layer for rendering clustered data points.
@@ -58,7 +58,7 @@ export class WildfireLayerService {
     ]);
   }
 
-  public removeWildfireLayer(map: atlas.Map): void {
+  public async removeWildfireLayer(map: atlas.Map): Promise<void> {
     if (map.layers.getLayerById(this.wildfireSymbolClusterId) != null) {
       map.layers.remove(this.wildfireSymbolClusterId);
     }
@@ -70,6 +70,8 @@ export class WildfireLayerService {
     if (map.layers.getLayerById(this.wildfireDubbleId) != null) {
       map.layers.remove(this.wildfireDubbleId);
     }
+
+    Promise.resolve();
   }
 
   private getWildfireBubbleLayer(wildfireDatasource: atlas.source.DataSource): atlas.layer.Layer<atlas.layer.LayerEvents> {

@@ -10,7 +10,7 @@ export class EarthquakeLayerService {
   private earthquakeLabelsId = 'earthquake-labels';
   private earthquakeDatasource = 'earthquake-datasource';
 
-  public addEarthquakeLayer(map: atlas.Map): void {
+  public async addEarthquakeLayer(map: atlas.Map): Promise<void> {
     //Create a data source and add it to the map.
     let earthquakeDatasource = map.sources.getById(this.earthquakeDatasource) as atlas.source.DataSource;
 
@@ -19,10 +19,22 @@ export class EarthquakeLayerService {
       map.sources.add(earthquakeDatasource);
 
       //Load the earthquake data.
-      earthquakeDatasource.importDataFromUrl(this.earthquakeFeedUrl);
+      await earthquakeDatasource.importDataFromUrl(this.earthquakeFeedUrl);
     }
 
     map.layers.add(this.getEarthquakeLayers(map, earthquakeDatasource));
+  }
+
+  public async removeEarthquakeLayer(map: atlas.Map): Promise<void> {
+    if (map.layers.getLayerById(this.earthquakeCirclesId) != null) {
+      map.layers.remove(this.earthquakeCirclesId);
+    }
+
+    if (map.layers.getLayerById(this.earthquakeLabelsId) != null) {
+      map.layers.remove(this.earthquakeLabelsId);
+    }
+
+    Promise.resolve();
   }
 
   private getEarthquakeLayers(map: atlas.Map, datasource: atlas.source.Source): atlas.layer.Layer[] {
@@ -71,15 +83,5 @@ export class EarthquakeLayerService {
     });
 
     return [earthquakeLayer, earthqukeLableLayer];
-  }
-
-  public removeEarthquakeLayer(map: atlas.Map): void {
-    if (map.layers.getLayerById(this.earthquakeCirclesId) != null) {
-      map.layers.remove(this.earthquakeCirclesId);
-    }
-
-    if (map.layers.getLayerById(this.earthquakeLabelsId) != null) {
-      map.layers.remove(this.earthquakeLabelsId);
-    }
   }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AzureMapsService } from './auzer-maps.service';
 import * as atlas from 'azure-maps-control';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'azure-maps-component',
@@ -13,6 +14,12 @@ export class AzureMapsComponent implements OnInit {
   public isWeatherOn = false;
   public isEarthquakeOn = false;
   public isWildfireOn = false;
+  public isLoading = false;
+  public mapToolsForm: FormGroup = new FormGroup({
+    earthquakeCheckbox: new FormControl({ value: this.isEarthquakeOn, disabled: true }),
+    wildfireCheckbox: new FormControl({ value: this.isWildfireOn, disabled: true }),
+    weatherCheckbox: new FormControl({ value: this.isWeatherOn, disabled: true })
+ });
 
   @ViewChild('mapContainer', { static: true })
   public mapContainer: ElementRef;
@@ -39,11 +46,23 @@ export class AzureMapsComponent implements OnInit {
 
   public onWildfire(): void {
     this.isWildfireOn = !this.isWildfireOn;
+    this.isLoading = true;
 
     if (this.isWildfireOn) {
-      this.azureMapsService.addWildfireLayer(this.map);
+      this.azureMapsService.addWildfireLayer(this.map).then(() => {
+        this.isLoading = false;
+      }, (error) => {
+        this.isLoading = false;
+        console.error(`An error occred during the Wildfire layer insert, ${error}`)
+      });
     } else {
-      this.azureMapsService.removeWildfireLayer(this.map);
+      this.azureMapsService.removeWildfireLayer(this.map)
+        .then(() => {
+          this.isLoading = false;
+        }, (error) => {
+          this.isLoading = false;
+          console.error(`An error occred during the Wildfire layer remove, ${error}`)
+        });
     }
   }
 
@@ -59,11 +78,22 @@ export class AzureMapsComponent implements OnInit {
 
   public onEarthquake(): void {
     this.isEarthquakeOn = !this.isEarthquakeOn;
+    this.isLoading = true;
 
     if (this.isEarthquakeOn) {
-      this.azureMapsService.addEarthquakeLayer(this.map);
+      this.azureMapsService.addEarthquakeLayer(this.map).then(() => {
+        this.isLoading = false;
+      }, (error) => {
+        this.isLoading = false;
+        console.error(`An error occred during the Earthquake layer insert, ${error}`)
+      });
     } else {
-      this.azureMapsService.removeEarthquakeLayer(this.map);
+      this.azureMapsService.removeEarthquakeLayer(this.map).then(() => {
+        this.isLoading = false;
+      }, (error) => {
+        this.isLoading = false;
+        console.error(`An error occred during the Earthquake layer remove, ${error}`)
+      });
     }
   }
 }
