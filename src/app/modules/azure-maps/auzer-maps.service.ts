@@ -9,6 +9,7 @@ import { EarthquakeLayerService } from './earthquake-layer.service';
 export class AzureMapsService {
   private subscriptionKey = 'Fnx2qxgvFYMnsLyDzW5THnONPC25rxmiah5amTzkpgc';
   private weatherTileUrl = 'https://atlas.microsoft.com/map/tile?api-version=2.0&tilesetId=microsoft.weather.infrared.main&zoom={z}&x={x}&y={y}&subscription-key=' + this.subscriptionKey;
+  private weatherLayerId = 'weather-layer';
 
   constructor(private wildfireLayerServuce: WildfireLayerService, private earthquakeLayerService: EarthquakeLayerService) { }
 
@@ -39,8 +40,8 @@ export class AzureMapsService {
   }
 
   public removeWeatherLayer(map: atlas.Map): void {
-    if (map.layers.getLayerById('weather-layer') != null) {
-      map.layers.remove('weather-layer');
+    if (map.layers.getLayerById(this.weatherLayerId) != null) {
+      map.layers.remove(this.weatherLayerId);
     }
   }
 
@@ -66,7 +67,7 @@ export class AzureMapsService {
       tileUrl: this.weatherTileUrl,
       opacity: 0.9,
       tileSize: 256
-    }, 'weather-layer');
+    }, this.weatherLayerId);
 
     return tileLayer;
   }

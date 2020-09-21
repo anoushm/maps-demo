@@ -6,13 +6,17 @@ import * as atlas from 'azure-maps-control';
 })
 export class WildfireLayerService {
   private wildfireUrl = 'https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/Active_Fires/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson';
+  private wildfireDatasourceId = 'wildfire-datasource';
+  private wildfireSymbolClusterId = 'wildfire-symbol-cluster';
+  private wildfireBubbleClusterId = 'wildfire-bubble-cluster';
+  private wildfireDubbleId = 'wildfire-bubble';
 
   public addWildfireLayer(map: atlas.Map): void {
 
-    let wildfireDatasource = map.sources.getById('wildfire-datasource') as atlas.source.DataSource;
+    let wildfireDatasource = map.sources.getById(this.wildfireDatasourceId) as atlas.source.DataSource;
 
     if (wildfireDatasource == null) {
-      wildfireDatasource = new atlas.source.DataSource('wildfire-datasource', {
+      wildfireDatasource = new atlas.source.DataSource(this.wildfireDatasourceId, {
         //Tell the data source to cluster point data.
         cluster: true,
 
@@ -33,7 +37,8 @@ export class WildfireLayerService {
     var clusterBubbleLayer = this.getWildfireClusterBubbleLayer(wildfireDatasource);
 
     //Add a click event to the layer so we can zoom in when a user clicks a cluster.
-    map.events.add('click', clusterBubbleLayer, (e: atlas.MapMouseEvent): void => this.wildfireClusterClicked(e, wildfireDatasource, map));
+    map.events.add('click', clusterBubbleLayer,
+      (e: atlas.MapMouseEvent): void => this.wildfireClusterClicked(e, wildfireDatasource, map));
 
     //Add mouse events to change the mouse cursor when hovering over a cluster.
     map.events.add('mouseenter', clusterBubbleLayer, () => {
@@ -54,21 +59,21 @@ export class WildfireLayerService {
   }
 
   public removeWildfireLayer(map: atlas.Map): void {
-    if (map.layers.getLayerById('wildfire-symbol-cluster') != null) {
-      map.layers.remove('wildfire-symbol-cluster');
+    if (map.layers.getLayerById(this.wildfireSymbolClusterId) != null) {
+      map.layers.remove(this.wildfireSymbolClusterId);
     }
 
-    if (map.layers.getLayerById('wildfire-bubble-cluster') != null) {
-      map.layers.remove('wildfire-bubble-cluster');
+    if (map.layers.getLayerById(this.wildfireBubbleClusterId) != null) {
+      map.layers.remove(this.wildfireBubbleClusterId);
     }
 
-    if (map.layers.getLayerById('wildfire-bubble') != null) {
-      map.layers.remove('wildfire-bubble');
+    if (map.layers.getLayerById(this.wildfireDubbleId) != null) {
+      map.layers.remove(this.wildfireDubbleId);
     }
   }
 
   private getWildfireBubbleLayer(wildfireDatasource: atlas.source.DataSource): atlas.layer.Layer<atlas.layer.LayerEvents> {
-    return new atlas.layer.SymbolLayer(wildfireDatasource, 'wildfire-bubble', {
+    return new atlas.layer.SymbolLayer(wildfireDatasource, this.wildfireDubbleId, {
       filter: ['!', ['has', 'point_count']],
       iconOptions: {
         image: 'marker-red',
@@ -83,7 +88,7 @@ export class WildfireLayerService {
   }
 
   private getWildfireClusterLayer(wildfireDatasource: atlas.source.DataSource): atlas.layer.Layer<atlas.layer.LayerEvents> {
-    return new atlas.layer.SymbolLayer(wildfireDatasource, 'wildfire-symbol-cluster', {
+    return new atlas.layer.SymbolLayer(wildfireDatasource, this.wildfireSymbolClusterId, {
       iconOptions: {
         image: 'none' //Hide the icon image.
       },
@@ -95,7 +100,7 @@ export class WildfireLayerService {
   }
 
   private getWildfireClusterBubbleLayer(wildfireDatasource: atlas.source.DataSource): atlas.layer.BubbleLayer {
-    return new atlas.layer.BubbleLayer(wildfireDatasource, 'wildfire-bubble-cluster', {
+    return new atlas.layer.BubbleLayer(wildfireDatasource, this.wildfireBubbleClusterId, {
       //Scale the size of the clustered bubble based on the number of points in the cluster.
       radius: [
         'step',
