@@ -11,7 +11,7 @@ export class WildfireLayerService {
   private wildfireBubbleClusterId = 'wildfire-bubble-cluster';
   private wildfireDubbleId = 'wildfire-bubble';
 
-  public async addWildfireLayer(map: atlas.Map): Promise<void> {
+  public async add(map: atlas.Map): Promise<void> {
 
     let wildfireDatasource = map.sources.getById(this.wildfireDatasourceId) as atlas.source.DataSource;
 
@@ -58,7 +58,7 @@ export class WildfireLayerService {
     ]);
   }
 
-  public async removeWildfireLayer(map: atlas.Map): Promise<void> {
+  public async remove(map: atlas.Map): Promise<void> {
     if (map.layers.getLayerById(this.wildfireSymbolClusterId) != null) {
       map.layers.remove(this.wildfireSymbolClusterId);
     }

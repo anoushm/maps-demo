@@ -2,16 +2,17 @@ import { Injectable } from '@angular/core';
 import * as atlas from 'azure-maps-control';
 import { WildfireLayerService } from './wildfire-layer.service';
 import { EarthquakeLayerService } from './earthquake-layer.service';
+import { WeatherLayerService } from './weather-layer.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AzureMapsService {
   private subscriptionKey = 'Fnx2qxgvFYMnsLyDzW5THnONPC25rxmiah5amTzkpgc';
-  private weatherTileUrl = 'https://atlas.microsoft.com/map/tile?api-version=2.0&tilesetId=microsoft.weather.infrared.main&zoom={z}&x={x}&y={y}&subscription-key=' + this.subscriptionKey;
-  private weatherLayerId = 'weather-layer';
 
-  constructor(private wildfireLayerServuce: WildfireLayerService, private earthquakeLayerService: EarthquakeLayerService) { }
+  constructor(private wildfireLayerServuce: WildfireLayerService,
+    private earthquakeLayerService: EarthquakeLayerService,
+    private weatherLayerService: WeatherLayerService) { }
 
   public createMap(htmlElement: HTMLElement, markes: any[]): atlas.Map {
     const map = new atlas.Map(htmlElement, {
@@ -35,41 +36,28 @@ export class AzureMapsService {
     return map;
   }
 
-  public addWeatherLayer(map: atlas.Map): void {
-    map.layers.add(this.weatherTileLayer);
+  public async addWeatherLayer(map: atlas.Map): Promise<void> {
+    return this.weatherLayerService.add(map);
   }
 
-  public removeWeatherLayer(map: atlas.Map): void {
-    if (map.layers.getLayerById(this.weatherLayerId) != null) {
-      map.layers.remove(this.weatherLayerId);
-    }
+  public async removeWeatherLayer(map: atlas.Map): Promise<void> {
+    return this.weatherLayerService.remove(map);
   }
 
   public async addEarthquakeLayer(map: atlas.Map): Promise<void> {
-    return this.earthquakeLayerService.addEarthquakeLayer(map);
+    return this.earthquakeLayerService.add(map);
   }
 
   public async removeEarthquakeLayer(map: atlas.Map): Promise<void> {
-    return this.earthquakeLayerService.removeEarthquakeLayer(map);
+    return this.earthquakeLayerService.remove(map);
   }
 
   public async addWildfireLayer(map: atlas.Map): Promise<void> {
-    this.wildfireLayerServuce.addWildfireLayer(map);
+    this.wildfireLayerServuce.add(map);
   }
 
   public async removeWildfireLayer(map: atlas.Map): Promise<void> {
-    this.wildfireLayerServuce.removeWildfireLayer(map);
-  }
-
-  private get weatherTileLayer(): atlas.layer.TileLayer {
-
-    const tileLayer = new atlas.layer.TileLayer({
-      tileUrl: this.weatherTileUrl,
-      opacity: 0.9,
-      tileSize: 256
-    }, this.weatherLayerId);
-
-    return tileLayer;
+    this.wildfireLayerServuce.remove(map);
   }
 
   private get mapControls(): atlas.Control[] {

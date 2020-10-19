@@ -10,7 +10,7 @@ export class EarthquakeLayerService {
   private earthquakeLabelsId = 'earthquake-labels';
   private earthquakeDatasource = 'earthquake-datasource';
 
-  public async addEarthquakeLayer(map: atlas.Map): Promise<void> {
+  public async add(map: atlas.Map): Promise<void> {
     //Create a data source and add it to the map.
     let earthquakeDatasource = map.sources.getById(this.earthquakeDatasource) as atlas.source.DataSource;
 
@@ -25,7 +25,7 @@ export class EarthquakeLayerService {
     map.layers.add(this.getEarthquakeLayers(map, earthquakeDatasource));
   }
 
-  public async removeEarthquakeLayer(map: atlas.Map): Promise<void> {
+  public async remove(map: atlas.Map): Promise<void> {
     if (map.layers.getLayerById(this.earthquakeCirclesId) != null) {
       map.layers.remove(this.earthquakeCirclesId);
     }
