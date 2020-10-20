@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import * as atlas from 'azure-maps-control';
+import { MapLayer } from './models/map-layer';
 
 @Injectable({
   providedIn: 'root',
 })
-export class EarthquakeLayerService {
+export class EarthquakeLayerService implements MapLayer {
   private earthquakeFeedUrl = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson'; // past 30 days
   private earthquakeCirclesId = 'earthquake-circles';
   private earthquakeLabelsId = 'earthquake-labels';

@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import * as atlas from 'azure-maps-control';
+import { MapLayer } from './models/map-layer';
 
 @Injectable({
   providedIn: 'root',
 })
-export class WildfireLayerService {
+export class WildfireLayerService implements MapLayer {
   private wildfireUrl = 'https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/Active_Fires/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson';
   private wildfireDatasourceId = 'wildfire-datasource';
   private wildfireSymbolClusterId = 'wildfire-symbol-cluster';

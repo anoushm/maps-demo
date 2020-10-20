@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as atlas from 'azure-maps-control';
-import { WildfireLayerService } from './wildfire-layer.service';
-import { EarthquakeLayerService } from './earthquake-layer.service';
-import { WeatherLayerService } from './weather-layer.service';
+import { MapLayerFactoryService } from './map-layer-factory.service';
+import { MapLayerEnum } from './models/map-layer.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -10,9 +9,7 @@ import { WeatherLayerService } from './weather-layer.service';
 export class AzureMapsService {
   private subscriptionKey = 'Fnx2qxgvFYMnsLyDzW5THnONPC25rxmiah5amTzkpgc';
 
-  constructor(private wildfireLayerServuce: WildfireLayerService,
-    private earthquakeLayerService: EarthquakeLayerService,
-    private weatherLayerService: WeatherLayerService) { }
+  constructor(private layerFactoryService: MapLayerFactoryService) { }
 
   public createMap(htmlElement: HTMLElement, origin: atlas.data.Position, markes: any[]): atlas.Map {
     const map = new atlas.Map(htmlElement, {
@@ -37,27 +34,27 @@ export class AzureMapsService {
   }
 
   public async addWeatherLayer(map: atlas.Map): Promise<void> {
-    return this.weatherLayerService.add(map);
+    return this.layerFactoryService.getLayer(MapLayerEnum.Weather)?.add(map);
   }
 
   public async removeWeatherLayer(map: atlas.Map): Promise<void> {
-    return this.weatherLayerService.remove(map);
+    return this.layerFactoryService.getLayer(MapLayerEnum.Weather)?.remove(map);
   }
 
   public async addEarthquakeLayer(map: atlas.Map): Promise<void> {
-    return this.earthquakeLayerService.add(map);
+    return this.layerFactoryService.getLayer(MapLayerEnum.Earthquake)?.add(map);
   }
 
   public async removeEarthquakeLayer(map: atlas.Map): Promise<void> {
-    return this.earthquakeLayerService.remove(map);
+    return this.layerFactoryService.getLayer(MapLayerEnum.Earthquake)?.remove(map);
   }
 
   public async addWildfireLayer(map: atlas.Map): Promise<void> {
-    this.wildfireLayerServuce.add(map);
+    return this.layerFactoryService.getLayer(MapLayerEnum.WildFire)?.add(map);
   }
 
   public async removeWildfireLayer(map: atlas.Map): Promise<void> {
-    this.wildfireLayerServuce.remove(map);
+    return this.layerFactoryService.getLayer(MapLayerEnum.WildFire)?.remove(map);
   }
 
   private get mapControls(): atlas.Control[] {

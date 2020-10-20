@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import * as atlas from 'azure-maps-control';
+import { MapLayer } from './models/map-layer';
 
 @Injectable({
   providedIn: 'root',
 })
-export class WeatherLayerService {
+export class WeatherLayerService implements MapLayer {
   private subscriptionKey = 'Fnx2qxgvFYMnsLyDzW5THnONPC25rxmiah5amTzkpgc';
   private weatherTileUrl = 'https://atlas.microsoft.com/map/tile?api-version=2.0&tilesetId=microsoft.weather.infrared.main&zoom={z}&x={x}&y={y}&subscription-key=' + this.subscriptionKey;
   private weatherLayerId = 'weather-layer';
