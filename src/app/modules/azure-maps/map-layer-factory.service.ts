@@ -10,7 +10,8 @@ import { WeatherLayerService } from './weather-layer.service';
 })
 export class MapLayerFactoryService {
 
-  constructor(private wildfireLayerService: WildfireLayerService,
+  constructor(
+    private wildfireLayerService: WildfireLayerService,
     private earthquakeLayerService: EarthquakeLayerService,
     private weatherLayerService: WeatherLayerService) { }
 
