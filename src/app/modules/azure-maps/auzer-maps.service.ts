@@ -14,10 +14,10 @@ export class AzureMapsService {
     private earthquakeLayerService: EarthquakeLayerService,
     private weatherLayerService: WeatherLayerService) { }
 
-  public createMap(htmlElement: HTMLElement, markes: any[]): atlas.Map {
+  public createMap(htmlElement: HTMLElement, origin: atlas.data.Position, markes: any[]): atlas.Map {
     const map = new atlas.Map(htmlElement, {
-      center: [-118.270293, 34.039737],
-      zoom: 4,
+      center: origin,
+      zoom: 12,
       anguage: 'en-US',
       authOptions: {
         authType: atlas.AuthenticationType.subscriptionKey,

@@ -33,7 +33,9 @@ export class AzureMapsComponent implements OnInit {
   private initMap(): void {
 
     if (this.map == null) {
-      this.map = this.azureMapsService.createMap(this.mapContainer.nativeElement,
+      this.map = this.azureMapsService.createMap(
+        this.mapContainer.nativeElement,
+        [-118.270293, 34.039737],
         [
           { name: 'Facility 1', latitude: -118.270293, longitude: 34.009737 },
           { name: 'Facility 2', latitude: -118.250293, longitude: 34.049737 },
